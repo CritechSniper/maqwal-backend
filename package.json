@@ -1,6 +1,22 @@
 {
+  "name": "gate-email-app",
+  "version": "1.0.0",
+  "description": "Node.js server that triggers a Python email script",
+  "main": "index.cjs",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.mjs"
+  },
   "dependencies": {
-    "express": "^5.2.1",
-    "mongodb": "^7.6.0"
-  }
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "mongodb": "^7.6.0",
+    "node-fetch": "^2.7.0",
+    "validator": "^13.15.15"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "license": "MIT"
 }
