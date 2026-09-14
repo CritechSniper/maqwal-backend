@@ -1,10 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import fetch from 'node-fetch';
 import dotenv from 'dotenv';
-import validator from 'validator';
-import { spawn } from 'child_process';
-import { createRequire } from 'module';
 import {
   MainDatabase,
   getAllByClassAndSection,
@@ -31,11 +27,8 @@ app.post('/ping', (req, res) => {
   res.json({ command: "ping", username: name, timestamp: new Date().toISOString() });
 });
 
-// MongoDB loader (CJS imports)
-const mongodbloader = async () => {
-  console.log("[ASYNC BLOCK] async block loaded!");
+    console.log("[PORT LOG] Starting PORT loads!");
 
-  try {
 
     app.get("/", (req, res) => res.send("Server is running!"));
 
@@ -136,16 +129,11 @@ const mongodbloader = async () => {
       }
     });
 
-    console.log("[ASYNC BLOCK] Finished loading");
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-await mongodbloader();
+    console.log("[PORT LOG] Finished loading ports");
 
 // 404
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
-app.listen(3000, () => console.log(`Server running on port ${PORT}`));
+const PORT = 3000
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
