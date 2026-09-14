@@ -1,21 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import {
-  MainDatabase,
-  getAllByClassAndSection,
-  getByID
-} from "./mongodb.mjs";
-import { AssignmentsDB } from "./assignhub/assignments.mjs"
+
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+
+// MUST BE FIRST
 app.use(cors({
-  origin: ["http://127.0.0.1:5500", "http://localhost:5500"]
+  origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
+  methods: ["GET", "POST"],
+  credentials: true
 }));
 
-// Logger FIRST
+app.use(express.json());
+
+// Logger
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
