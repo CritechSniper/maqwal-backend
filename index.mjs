@@ -5,9 +5,13 @@ import dotenv from 'dotenv';
 import validator from 'validator';
 import { spawn } from 'child_process';
 import { createRequire } from 'module';
-
+import {
+  MainDatabase,
+  getAllByClassAndSection,
+  getByID
+} from "./mongodb.mjs";
+import { AssignmentsDB } from "./assignhub/assignments.mjs"
 dotenv.config();
-const require = createRequire(import.meta.url); // Needed for .cjs modules
 
 const app = express();
 app.use(express.json());
@@ -32,13 +36,6 @@ const mongodbloader = async () => {
   console.log("[ASYNC BLOCK] async block loaded!");
 
   try {
-    const {
-      MainDatabase,
-      getAllByClassAndSection,
-      getByID
-    } = require("./mongodb.mjs"); // now ESM
-
-    const AssignmentsDB = require("./assignments.cjs");
 
     app.get("/", (req, res) => res.send("Server is running!"));
 

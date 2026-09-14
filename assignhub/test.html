@@ -1,0 +1,46 @@
+<script type="module">
+  async function loadAssignments() {
+  try {
+    const response = await fetch("http://192.168.1.173:5000/assginments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        grade: "9",
+        section: "B",
+        subject: "ICT"
+      })
+    });
+
+
+
+    const md = await response.json();
+    console.log("Raw response:", md);
+
+    if (!response.ok) {
+      console.error("Server returned an error:", md);
+      return;
+    }
+
+    if (!md.data) {
+      console.warn("No data returned:", md);
+      return;
+    }
+
+    if (Array.isArray(md.data)) {
+      md.data.forEach(item => console.log("Assignment:", item));
+    } else {
+      console.log("Unexpected data format:", md.data);
+    }
+
+  } catch (err) {
+    console.error("Fetch failed:", err);
+  }
+}
+await loadAssignments();
+// import { AssignmentsDB } from "./assignhub/assignments.mjs";
+// const cs = await AssignmentsDB.getAssignments("9","B","ICT")
+// console.log(await cs)
+// process.exit(0)
+</script>
