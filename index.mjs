@@ -148,4 +148,4 @@ await mongodbloader();
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(3000, () => console.log(`Server running on port ${PORT}`));
