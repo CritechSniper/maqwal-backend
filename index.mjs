@@ -1,10 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { MainDatabase, getAllByClassAndSection, getByID, getTeacherByClass } from "./mongodb.mjs"
+import { AssignmentsDB } from "./assignhub/assignments.mjs"
 
 dotenv.config();
 
 const app = express();
+app.use(cors({
+  origin: "*",        // or "http://127.0.0.1:5500"
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 
 app.use(express.json());
@@ -71,17 +78,22 @@ app.post('/ping', (req, res) => {
 
     app.post("/students/login", async (req, res) => {
       const { SID, password } = req.body;
-      const stu = await MainDatabase.studentsHandlers.getByID(SID, "stus");
-
-      if (!stu) return res.json({ body: "User does not exist", status: "Fail" });
-
+      console.log("Body:", SID, password)
+      const stu = await getByID(parseInt(SID), "stus");
+      if (!stu) {
+        console.log(`Invalid user: ${SID}`)
+        return res.json({ body: "User does not exist", status: "Fail" })
+      };
+      console.log(stu)
       if (stu.password === password) {
+        const teach = await getTeacherByClass(stu.grade, stu.section)
         const innerd = {
           SID: stu.SID,
           name: stu.name,
           grade: stu.grade,
           section: stu.section,
-          password: "NiceTryChangingBackendButTsWontWork:)"
+          password: "NiceTryChangingBackendButTsWontWork:)",
+          teachName: teach?.name
         };
         return res.json({ body: `Login successful for ${stu.name}`, data: innerd, status: "Success" });
       }

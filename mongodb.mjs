@@ -46,8 +46,10 @@ export async function registerTeacher(
     console.log("Teacher already registered, CANNOT register duplicates!");
     return;
   }
-
-  if (!(gender === "male" || gender === "female")) {
+  if ( typeof gender != "string" ) {
+    console.log("gender must be a string")
+  }
+  if (!(gender.toLowerCase() === "male" || gender.toLowerCase() === "female")) {
     return "Please enter a valid gender";
   }
 
@@ -135,6 +137,14 @@ export async function getAllByClassAndSection(grade = "9", section = "B") {
   }
 }
 
+export async function getTeacherByClass(grade, section) {
+  const db = await connect("teachs");
+  const teacher = db.findOne(
+    { "class.grade": grade, "class.section": section }
+  );
+  return teacher;
+}
+console.log(await getTeacherByClass(10, "B"))
 export const MainDatabase = {
   studentsHandlers: {
     registerStudent,
