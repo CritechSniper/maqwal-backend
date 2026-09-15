@@ -40,7 +40,7 @@ export async function registerTeacher(
   gender,
   password
 ) {
-  const db = await connect("teachs");
+  const db = await connect("teac");
 
   if (await db.findOne({ SID })) {
     console.log("Teacher already registered, CANNOT register duplicates!");
@@ -138,7 +138,7 @@ export async function getAllByClassAndSection(grade = "9", section = "B") {
 }
 
 export async function getTeacherByClass(grade, section) {
-  const db = await connect("teachs");
+  const db = await connect("teac");
   const teacher = db.findOne(
     { "class.grade": grade, "class.section": section }
   );

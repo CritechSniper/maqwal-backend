@@ -42,7 +42,7 @@ app.post('/ping', (req, res) => {
 
     app.post("/teachers/login", async (req, res) => {
       const { SID, password } = req.body;
-      const data = await MainDatabase.teacherHandlers.getByID(SID, "teachs");
+      const data = await MainDatabase.teacherHandlers.getByID(SID, "teac");
 
       if (!data) return res.json({ body: "User does not exist", status: "Fail" });
 
