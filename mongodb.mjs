@@ -13,21 +13,24 @@ function log(msg) {
 }
 
 export async function connect(collectionName) {
-  if (conned) {
-    console.log("[MONGODB] Connected!");
-    return mc.db(dbName).collection(collectionName);
+  if (!conned) {
+    try {
+      await mc.connect();
+      conned = true;
+      log("✅ Connected to MongoDB");
+    } catch (e) {
+      log(`❌ Connection error: ${e.message}`);
+      throw e;
+    }
   }
-
-  try {
-    await mc.connect();
-    conned = true;
-    log("✅ Connected to MongoDB");
-  } catch (e) {
-    log(`❌ Connection error: ${e.message}`);
-    throw e;
-  }
-
   return mc.db(dbName).collection(collectionName);
+}
+
+// Function to store assignments matching the screenshot schema
+export async function createAssignment(assignmentData) {
+  const db = await connect("assigns");
+  const result = await db.insertOne(assignmentData);
+  return result;
 }
 
 export async function registerTeacher(
@@ -46,8 +49,8 @@ export async function registerTeacher(
     console.log("Teacher already registered, CANNOT register duplicates!");
     return;
   }
-  if ( typeof gender != "string" ) {
-    console.log("gender must be a string")
+  if (typeof gender !== "string") {
+    console.log("gender must be a string");
   }
   if (!(gender.toLowerCase() === "male" || gender.toLowerCase() === "female")) {
     return "Please enter a valid gender";
@@ -139,12 +142,13 @@ export async function getAllByClassAndSection(grade = "9", section = "B") {
 
 export async function getTeacherByClass(grade, section) {
   const db = await connect("teac");
-  const teacher = db.findOne(
-    { "class.grade": grade, "class.section": section }
-  );
+  const teacher = await db.findOne({
+    "class.grade": grade,
+    "class.section": section
+  });
   return teacher;
 }
-console.log(await getTeacherByClass(10, "B"))
+
 export const MainDatabase = {
   studentsHandlers: {
     registerStudent,
