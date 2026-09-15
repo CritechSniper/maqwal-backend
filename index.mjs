@@ -103,7 +103,7 @@ app.post("/assign", async (req, res) => {
         answer: Number(q.answer),
         answers: q.answers || [""],
       })),
-      dueDate: dueDate || "29/11/2025",
+      dueDate: dueDate && dueDate.trim() !== "" ? dueDate : "No Due Date",
     };
 
     const dbResult = await createAssignment(assignmentDoc);
