@@ -152,14 +152,36 @@ app.post("/students/login", async (req, res) => {
 });
 
 app.post("/students/get", async (req, res) => {
-  const { SID } = req.body;
-  if (!SID) return res.json({ body: "SID required", status: "Fail" });
+  try {
+    const { SID } = req.body;
+    if (!SID) {
+      return res.json({ body: "SID is required", status: "Fail" });
+    }
 
-  const student = await MainDatabase.studentsHandlers.getByID(SID, "stu");
-  if (!student)
-    return res.json({ body: "User does not exist", status: "Fail" });
+    // Attempt numerical SID lookup first, fallback to string if needed
+    const queryID = isNaN(SID) ? SID : parseInt(SID);
+    let student = await MainDatabase.studentsHandlers.getByID(queryID, "stu");
 
-  res.json({ body: "Fetching successful!", data: student, status: "Success" });
+    if (!student) {
+      student = await MainDatabase.studentsHandlers.getByID(String(SID), "stu");
+    }
+
+    if (!student) {
+      return res.json({ body: "Student not found", status: "Fail" });
+    }
+
+    // Exclude password from response
+    const { password, ...studentDetails } = student;
+
+    res.json({
+      body: "Student found successfully!",
+      data: studentDetails,
+      status: "Success",
+    });
+  } catch (err) {
+    console.error("Lookup error:", err);
+    res.status(500).json({ body: "Server Error", status: "Fail" });
+  }
 });
 
 app.post("/students/all", async (req, res) => {
