@@ -1,16 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { MainDatabase, getAllByClassAndSection, getByID, getTeacherByClass, createAssignment, connect } from "./mongodb.mjs";
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import {
+  MainDatabase,
+  getAllByClassAndSection,
+  getByID,
+  getTeacherByClass,
+  createAssignment,
+  connect,
+} from "./mongodb.mjs";
 
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  }),
+);
 
 app.use(express.json());
 
@@ -21,12 +30,16 @@ app.use((req, res, next) => {
 });
 
 // Health
-app.get('/health', (req, res) => res.send('OK'));
+app.get("/health", (req, res) => res.send("OK"));
 
 // Ping
-app.post('/ping', (req, res) => {
+app.post("/ping", (req, res) => {
   const { name } = req.body;
-  res.json({ command: "ping", username: name, timestamp: new Date().toISOString() });
+  res.json({
+    command: "ping",
+    username: name,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 console.log("[PORT LOG] Starting PORT loads!");
@@ -34,7 +47,12 @@ console.log("[PORT LOG] Starting PORT loads!");
 app.get("/", (req, res) => res.send("Server is running!"));
 
 app.get("/classes", (req, res) => {
-  res.json({ classes: [{ grade: "9", section: "A" }, { grade: "9", section: "B" }] });
+  res.json({
+    classes: [
+      { grade: "9", section: "A" },
+      { grade: "9", section: "B" },
+    ],
+  });
 });
 
 app.post("/teachers/login", async (req, res) => {
@@ -51,7 +69,11 @@ app.post("/teachers/login", async (req, res) => {
       subject: data.subject,
       password: "NiceTryButNah:)",
     };
-    return res.json({ body: `Login successful for ${data.name}`, data: innerd, status: "Success" });
+    return res.json({
+      body: `Login successful for ${data.name}`,
+      data: innerd,
+      status: "Success",
+    });
   }
 
   res.json({ body: "Incorrect password", status: "Fail" });
@@ -60,25 +82,28 @@ app.post("/teachers/login", async (req, res) => {
 // POST /assign endpoint storing exact document format
 app.post("/assign", async (req, res) => {
   try {
-    const { name, assigner, grade, section, subject, dueDate, questions } = req.body;
+    const { name, assigner, grade, section, subject, dueDate, questions } =
+      req.body;
 
     if (!name || !questions || !Array.isArray(questions)) {
-      return res.status(400).json({ body: "Invalid assignment payload", status: "Fail" });
+      return res
+        .status(400)
+        .json({ body: "Invalid assignment payload", status: "Fail" });
     }
 
     const assignmentDoc = {
       name: name || "Untitled Assignment",
-      assigner: assigner || "suseendha",
-      grade: String(grade || "9"),
-      section: String(section || "B"),
-      subject: subject || "ICT",
+      assigner: assigner || "Teacher",
+      grade: String(grade || ""),
+      section: String(section || ""),
+      subject: subject || "",
       questions: questions.map((q) => ({
         question: q.question,
         options: q.options,
         answer: Number(q.answer),
-        answers: q.answers || ['']
+        answers: q.answers || [""],
       })),
-      dueDate: dueDate || "29/11/2025"
+      dueDate: dueDate || "29/11/2025",
     };
 
     const dbResult = await createAssignment(assignmentDoc);
@@ -87,11 +112,13 @@ app.post("/assign", async (req, res) => {
       body: "Assignment created successfully!",
       status: "Success",
       id: dbResult.insertedId,
-      assignment: assignmentDoc
+      assignment: assignmentDoc,
     });
   } catch (err) {
     console.error("Error creating assignment:", err);
-    res.status(500).json({ body: "Server Error", error: err.message, status: "Fail" });
+    res
+      .status(500)
+      .json({ body: "Server Error", error: err.message, status: "Fail" });
   }
 });
 
@@ -112,9 +139,13 @@ app.post("/students/login", async (req, res) => {
       grade: stu.grade,
       section: stu.section,
       password: "NiceTryChangingBackendButTsWontWork:)",
-      teachName: teach?.name
+      teachName: teach?.name,
     };
-    return res.json({ body: `Login successful for ${stu.name}`, data: innerd, status: "Success" });
+    return res.json({
+      body: `Login successful for ${stu.name}`,
+      data: innerd,
+      status: "Success",
+    });
   }
 
   res.json({ body: "Incorrect password", status: "Fail" });
@@ -125,7 +156,8 @@ app.post("/students/get", async (req, res) => {
   if (!SID) return res.json({ body: "SID required", status: "Fail" });
 
   const student = await MainDatabase.studentsHandlers.getByID(SID, "stu");
-  if (!student) return res.json({ body: "User does not exist", status: "Fail" });
+  if (!student)
+    return res.json({ body: "User does not exist", status: "Fail" });
 
   res.json({ body: "Fetching successful!", data: student, status: "Success" });
 });
@@ -133,7 +165,11 @@ app.post("/students/get", async (req, res) => {
 app.post("/students/all", async (req, res) => {
   const { grd, Stc } = req.body;
   const students = await getAllByClassAndSection(grd, Stc);
-  res.json({ body: "Fetching all students successful!", data: students, status: "Success" });
+  res.json({
+    body: "Fetching all students successful!",
+    data: students,
+    status: "Success",
+  });
 });
 
 app.post("/assginments", async (req, res) => {
@@ -145,13 +181,18 @@ app.post("/assginments", async (req, res) => {
     }
 
     const db = await connect("assigns");
-    const assar = await db.find({ grade: String(grade), section: String(section), subject: String(subject) }).toArray();
+    const assar = await db
+      .find({
+        grade: String(grade),
+        section: String(section),
+        subject: String(subject),
+      })
+      .toArray();
 
     return res.json({
       body: "Fetch Success",
-      data: assar
+      data: assar,
     });
-
   } catch (error) {
     console.error("Error fetching assignments:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -161,7 +202,7 @@ app.post("/assginments", async (req, res) => {
 console.log("[PORT LOG] Finished loading ports");
 
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: "Route not found" });
 });
 
 const PORT = 3000;
