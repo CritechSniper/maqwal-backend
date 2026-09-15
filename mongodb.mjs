@@ -36,11 +36,11 @@ export async function registerTeacher(
   subject,
   grade,
   section,
-  nstus,
+  nstu,
   gender,
   password
 ) {
-  const db = await connect("teachs");
+  const db = await connect("teac");
 
   if (await db.findOne({ SID })) {
     console.log("Teacher already registered, CANNOT register duplicates!");
@@ -66,7 +66,7 @@ export async function registerTeacher(
     class: {
       grade,
       section,
-      nstus
+      nstu
     }
   });
 
@@ -74,7 +74,7 @@ export async function registerTeacher(
 }
 
 export async function registerStudent(SID, name, grade, section, password) {
-  const sdb = await connect("stus");
+  const sdb = await connect("stu");
 
   if (parseInt(grade) > 12) {
     console.log("Grades cannot be greater than 12!");
@@ -126,7 +126,7 @@ export async function deleteByID(SID, dbType) {
 }
 
 export async function getAllByClassAndSection(grade = "9", section = "B") {
-  const db = await connect("stus");
+  const db = await connect("stu");
 
   try {
     const sts = await db.find({ grade, section }).toArray();
@@ -138,7 +138,7 @@ export async function getAllByClassAndSection(grade = "9", section = "B") {
 }
 
 export async function getTeacherByClass(grade, section) {
-  const db = await connect("teachs");
+  const db = await connect("teac");
   const teacher = db.findOne(
     { "class.grade": grade, "class.section": section }
   );
