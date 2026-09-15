@@ -79,7 +79,7 @@ app.post('/ping', (req, res) => {
     app.post("/students/login", async (req, res) => {
       const { SID, password } = req.body;
       console.log("Body:", SID, password)
-      const stu = await getByID(parseInt(SID), "stus");
+      const stu = await getByID(parseInt(SID), "stu");
       if (!stu) {
         console.log(`Invalid user: ${SID}`)
         return res.json({ body: "User does not exist", status: "Fail" })
@@ -105,7 +105,7 @@ app.post('/ping', (req, res) => {
       const { SID } = req.body;
       if (!SID) return res.json({ body: "SID required", status: "Fail" });
 
-      const student = await MainDatabase.studentsHandlers.getByID(SID, "stus");
+      const student = await MainDatabase.studentsHandlers.getByID(SID, "stu");
       if (!student) return res.json({ body: "User does not exist", status: "Fail" });
 
       res.json({ body: "Fetching successful!", data: student, status: "Success" });

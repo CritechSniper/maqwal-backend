@@ -36,7 +36,7 @@ export async function registerTeacher(
   subject,
   grade,
   section,
-  nstus,
+  nstu,
   gender,
   password
 ) {
@@ -66,7 +66,7 @@ export async function registerTeacher(
     class: {
       grade,
       section,
-      nstus
+      nstu
     }
   });
 
@@ -74,7 +74,7 @@ export async function registerTeacher(
 }
 
 export async function registerStudent(SID, name, grade, section, password) {
-  const sdb = await connect("stus");
+  const sdb = await connect("stu");
 
   if (parseInt(grade) > 12) {
     console.log("Grades cannot be greater than 12!");
@@ -126,7 +126,7 @@ export async function deleteByID(SID, dbType) {
 }
 
 export async function getAllByClassAndSection(grade = "9", section = "B") {
-  const db = await connect("stus");
+  const db = await connect("stu");
 
   try {
     const sts = await db.find({ grade, section }).toArray();
