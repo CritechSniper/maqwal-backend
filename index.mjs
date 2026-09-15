@@ -52,7 +52,7 @@ app.post('/ping', (req, res) => {
           name: data.name,
           class: data.class,
           subject: data.subject,
-          password: "NiceTryChangingBackendButTsWontWork:)"
+          password: "NiceTryButNah:)",
         };
         return res.json({ body: `Login successful for ${data.name}`, data: innerd, status: "Success" });
       }
