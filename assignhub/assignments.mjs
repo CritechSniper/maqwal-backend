@@ -86,7 +86,7 @@ async function checkStudentAnswer(grade, section, name, assigner, qi, sid) {
 /**
  * Get assignments by grade, section, and subject
  */
-async function getAssignments(grade, section, subject) {
+export async function getAssignments(grade, section, subject) {
   const adb = await connect();
   if (subject) {
     const arr = await adb.find({ grade, section }).toArray();
