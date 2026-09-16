@@ -8,6 +8,7 @@ import {
   getTeacherByClass,
   createAssignment,
   connect,
+  editByEID,
 } from "./mongodb.mjs";
 
 dotenv.config();
@@ -135,6 +136,7 @@ app.post("/students/login", async (req, res) => {
   console.log(stu);
   if (stu.password === password) {
     const teach = await getTeacherByClass(stu.grade, stu.section);
+    await editByEID("stu",parseInt(SID),{ lastLoggedIn: Date.now() }) // <-- Setting last logged in timestamp [dont delete]
     const innerd = {
       SID: stu.SID,
       name: stu.name,

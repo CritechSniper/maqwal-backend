@@ -4,6 +4,7 @@ dotenv.config({ path: "local.env" });
 const mc = new MongoClient(
   "mongodb+srv://new-user_3:test123@maindatabase.tll790d.mongodb.net/?appName=MainDatabase",
 );
+import { connect as ex_con } from "../mongodb.mjs"
 const dbName = "MainDatabase";
 let connected = false;
 
@@ -16,7 +17,7 @@ async function connect() {
     connected = true;
     console.log("Connected to MongoDB!");
   }
-  return mc.db(dbName).collection("assignments");
+  return mc.db(dbName).collection("assigns");
 }
 /**
  * Build a new assignment object
@@ -86,23 +87,11 @@ async function checkStudentAnswer(grade, section, name, assigner, qi, sid) {
 /**
  * Get assignments by grade, section, and subject
  */
-export async function getAssignments(grade, section, subject) {
-  const adb = await connect();
-  if (subject) {
-    const arr = await adb.find({ grade, section }).toArray();
-    return arr.map((o) => ({
-      ...o,
-      _id: "",
-      questions: "",
-    }));
-  }
-  const arr = await adb.find({ grade, section, subject }).toArray();
-  return arr.map((o) => ({
-    ...o,
-    _id: "",
-    questions: "",
-  }));
+export async function getAssignments(grade, section) {
+  const adb = await ex_con("assigns");
+  return ((await adb.find().toArray()).filter(o => o.grade == grade && o.section == section));
 }
+
 
 /**
  * Insert a new assignment into DB

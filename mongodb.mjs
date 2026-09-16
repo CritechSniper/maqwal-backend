@@ -70,7 +70,7 @@ export async function registerTeacher(
       grade,
       section,
       nstu
-    }
+    }, inbox: []
   });
 
   console.log(`Registered ${gender === "male" ? "Mr." : "Ms."}${name}!`);
