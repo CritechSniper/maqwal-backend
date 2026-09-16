@@ -2,7 +2,7 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 dotenv.config({ path: "local.env" });
 const mc = new MongoClient(
-  "mongodb+srv://maqwalnorep_db_user:vkd03ae4EKoMY5MI@quizzez.dkossl4.mongodb.net/?appName=Quizzez",
+  "mongodb+srv://new-user_3:test123@maindatabase.tll790d.mongodb.net/?appName=MainDatabase",
 );
 const dbName = "MainDatabase";
 let connected = false;
