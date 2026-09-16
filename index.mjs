@@ -220,7 +220,21 @@ app.post("/assginments", async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.post("/students/assignments", async (req, res) => {
+  try {
+    
+    const { grade, section, SID } = req.body;
+    const assar = await getAssignments(grade, section, JSON.parse(SID));
+    return res.json({
+      body: "Fetch Success",
+      data: assar,
+    });
 
+  } catch (er) {
+    console.error("Error fetching student assignments:", er);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 console.log("[PORT LOG] Finished loading ports");
 
 app.use((req, res) => {

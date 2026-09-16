@@ -1,7 +1,9 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
-dotenv.config({path:"local.env"})
-const mc = new MongoClient("mongodb+srv://maqwalnorep_db_user:vkd03ae4EKoMY5MI@quizzez.dkossl4.mongodb.net/?appName=Quizzez")
+dotenv.config({ path: "local.env" });
+const mc = new MongoClient(
+  "mongodb+srv://maqwalnorep_db_user:vkd03ae4EKoMY5MI@quizzez.dkossl4.mongodb.net/?appName=Quizzez",
+);
 const dbName = "MainDatabase";
 let connected = false;
 
@@ -19,25 +21,53 @@ async function connect() {
 /**
  * Build a new assignment object
  */
-function returnNewAssignment(name, questions, options, assigner, answers = [], subject, grade, section, dueDate) {
+function returnNewAssignment(
+  name,
+  questions,
+  options,
+  assigner,
+  answers = [],
+  subject,
+  grade,
+  section,
+  dueDate,
+) {
   const q = questions.map((que, index) => ({
     question: que,
     options: options[index],
     answer: answers[index] ?? null, // index of correct option
-    answers: []
+    answers: [],
   }));
   return { name, assigner, grade, section, subject, questions: q, dueDate };
 }
 
-async function editAssignment(grade, section, assigner, name, qi, answerIndex, sid) {
+async function editAssignment(
+  grade,
+  section,
+  assigner,
+  name,
+  qi,
+  answerIndex,
+  sid,
+) {
   const edb = await connect();
   await edb.updateOne(
-    { grade, section, assigner, name, [`questions.${qi}.answers.sid`]: { $ne: sid } },
-    { $push: { [`questions.${qi}.answers`]: { sid, answer: answerIndex, status:null } } }
+    {
+      grade,
+      section,
+      assigner,
+      name,
+      [`questions.${qi}.answers.sid`]: { $ne: sid },
+    },
+    {
+      $push: {
+        [`questions.${qi}.answers`]: { sid, answer: answerIndex, status: null },
+      },
+    },
   );
   await edb.updateOne(
     { grade, section, assigner, name, [`questions.${qi}.answers.sid`]: sid },
-    { $set: { [`questions.${qi}.answers.$.answer`]: answerIndex } }
+    { $set: { [`questions.${qi}.answers.$.answer`]: answerIndex } },
   );
 }
 
@@ -45,21 +75,32 @@ async function checkStudentAnswer(grade, section, name, assigner, qi, sid) {
   const edb = await connect();
   const assignment = await edb.findOne({ grade, section, assigner, name });
   const question = assignment.questions[qi];
-  const submission = question.answers.find(a => a.sid === sid);
+  const submission = question.answers.find((a) => a.sid === sid);
   const isCorrect = submission.answer === question.answer;
-  return { isCorrect, studentAnswer: submission.answer, correctAnswer: question.answer };
+  return {
+    isCorrect,
+    studentAnswer: submission.answer,
+    correctAnswer: question.answer,
+  };
 }
 /**
  * Get assignments by grade, section, and subject
-*/
+ */
 async function getAssignments(grade, section, subject) {
   const adb = await connect();
+  if (subject) {
+    const arr = await adb.find({ grade, section }).toArray();
+    return arr.map((o) => ({
+      ...o,
+      _id: "",
+      questions: "",
+    }));
+  }
   const arr = await adb.find({ grade, section, subject }).toArray();
-
-  return arr.map(o => ({
+  return arr.map((o) => ({
     ...o,
     _id: "",
-    questions: ""
+    questions: "",
   }));
 }
 
@@ -75,7 +116,7 @@ async function createAssignment(assignment) {
 export const AssignmentsDB = {
   createAssignment,
   getAssignments,
-  returnNewAssignment
+  returnNewAssignment,
 };
 
 // ---------------------------------------------------- \\
