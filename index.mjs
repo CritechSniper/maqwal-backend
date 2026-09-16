@@ -11,7 +11,9 @@ import {
 } from "./mongodb.mjs";
 
 dotenv.config();
-
+import { 
+  getAssignments
+} from "./assignhub/assignments.mjs"
 const app = express();
 app.use(
   cors({
@@ -220,6 +222,7 @@ app.post("/assginments", async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 app.post("/students/assignments", async (req, res) => {
   try {
     
